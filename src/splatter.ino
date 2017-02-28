@@ -4,27 +4,37 @@ void splatter() {
 
   changePalette();
 
-  MILLISECONDS  = 10;
-  lowPass_audio = 0.15;
+  //MILLISECONDS  = 10;
+  //lowPass_audio = 0.15;
 
-  READ_AUDIO();
+  //READ_AUDIO();
 
-  //EVERY_N_MILLISECONDS(10) {
-  fadeToBlackBy( leds, NUM_LEDS, 1);
-  //}
+  EVERY_N_MILLISECONDS(1000) {
+    hue+=10;
+  }
 
-  blur1d(leds, NUM_LEDS, 150);
+//EVERY_N_MILLISECONDS(15){
+  //fadeToBlackBy(leds,NUM_LEDS,1);
+//}
 
-  for (int band = 0; band < 7; band++) {
 
-    hue = band * 36;
-//    hue = ColorFromPalette(gCurrentPalette, index, 255, LINEARBLEND);
+  //fadeToBlackBy( leds, NUM_LEDS, 1);
 
-    EVERY_N_MILLISECONDS(60) {
+  blur1d(leds, NUM_LEDS, 100);
+
+  //for (int band = 0; band < 7; band++) {
+
+    //hue = band * 36;
+    //INDEX = random(0, 8);
+
+    //hue = ColorFromPalette(gCurrentPalette, INDEX, 255, LINEARBLEND);
+
+    //MILLISECONDS = beatsin8(1,40,800);
+    EVERY_N_MILLISECONDS(50) {
       //if (mono[band] > 10) {
       pos = random16(NUM_LEDS - 1);
-      left_pos  = pos - random(0, 5);
-      right_pos = pos + random(0, 5);
+      left_pos  = pos - random(2, 10);
+      right_pos = pos + random(2, 10);
       if (left_pos < 0) {
         left_pos = 0;
       }
@@ -35,12 +45,12 @@ void splatter() {
     }
 
     for (int i = left_pos; i < right_pos; i++) {
-      leds[i] += CHSV( hue, 255, mono[band]);
+      leds[i] = CHSV( hue, 220, 220);
     }
 
 
   }
-}
+//}
 
 void addGlitter( fract8 chanceOfGlitter)
 {
