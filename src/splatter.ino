@@ -2,8 +2,7 @@
 
 void splatter() {
 
-  maxChanges = 20;      // Value for blending between palettes.
-
+  maxChanges = 20;  // Value for blending speed between palettes
 
   changePalette();
   INDEX = random(10,240);
@@ -35,16 +34,15 @@ void splatter() {
         leds[i] += ColorFromPalette(gCurrentPalette, INDEX, 150, LINEARBLEND);
 
       }
-      //}
+      //} // end audio threshold
     }
 
 
   }
-//}
 
-void addGlitter( fract8 chanceOfGlitter)
-{
-  if ( random8() < chanceOfGlitter) {
-    leds[ random16(NUM_LEDS) ] += CRGB::White;
-  }
-}
+// void addGlitter( fract8 chanceOfGlitter)
+// {
+//   if ( random8() < chanceOfGlitter) {
+//     leds[ random16(NUM_LEDS) ] += CRGB::White;
+//   }
+// }
