@@ -4,7 +4,7 @@
 // test num. 2
 
 #include <ClickEncoder.h>
-#include <TimerOne.h>
+ #include <TimerOne.h>
 //#include <MSGEQ7.h>
 
 
@@ -167,7 +167,7 @@ void welcome() {
 void loop() {
 
   EVERY_N_MILLISECONDS(MILLISECONDS) {
-    READ_AUDIO();
+    //READ_AUDIO();
   }
   MODE();
 

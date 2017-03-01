@@ -11,14 +11,14 @@ void splatter() {
   //lowPass_audio = 0.15;
   //READ_AUDIO();
 
-  EVERY_N_MILLISECONDS(40){
+  EVERY_N_MILLISECONDS(52){
     fadeToBlackBy(leds,NUM_LEDS,1);
-    blur1d(leds, NUM_LEDS, 115);
+    blur1d(leds, NUM_LEDS, 140);
   }
 
     //MILLISECONDS = beatsin8(50,20,400); // oscillating sin wave controlling
                                           // raindrop drawing every 20-400ms, 50bmp
-    EVERY_N_MILLISECONDS(250) {
+    EVERY_N_MILLISECONDS(40) {
 
       //if (mono[band] */ or mono_volume /*  > 10) { // if audio crosses a threshold
       pos = random16(NUM_LEDS - 1);

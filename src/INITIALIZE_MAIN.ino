@@ -26,7 +26,7 @@ void InitMSGEQ7() {
 }
 void InitSerial() {
 #ifdef DEBUG
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(500);
 #endif
 }
@@ -34,7 +34,7 @@ void InitSerial() {
 void InitWS2812B() {
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS).setCorrection(TypicalSMD5050);
   FastLED.setBrightness(BRIGHTNESS);
-  FastLED.setTemperature(Candle);
+  //FastLED.setTemperature(Candle);
 
   for (int i = 0; i < NUM_LEDS; i++) {
     fill_solid(leds, NUM_LEDS, CRGB::Black);

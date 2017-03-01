@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-int mode = 4;
+int mode = 17;
 //CRGB leds2[NUM_LEDS];
 //CRGB leds3[NUM_LEDS];
 
@@ -70,6 +70,10 @@ void MODE() {
       break;
     case 18:
       bpm();
+      break;
+    case 19:
+      changePalette();
+      map_palette(gCurrentPalette);
       break;
   }
 

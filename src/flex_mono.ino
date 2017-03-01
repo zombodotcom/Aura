@@ -11,7 +11,7 @@ void flex_mono() {
 
   MILLISECONDS = 10;
   lowPass_audio = 0.10;
-  spectrumWidth = 35;
+  spectrumWidth = 32;
 
   //fhue += mono[0] * .05;
   //  EVERY_N_MILLISECONDS(200){
@@ -20,11 +20,11 @@ void flex_mono() {
 
   for (int band = 0; band < 7; band++) {
 
-    left_current_brightness = map(left[band], 30, 255, 50, 255);
+    left_current_brightness = map(left[band], 0, 255, 0, 255);
     right_current_brightness = left_current_brightness;
 
     if (band < 6) {
-      left_next_brightness  = map(left[band + 1], 30, 255, 50, 255);
+      left_next_brightness  = map(left[band + 1], 0, 255, 0, 255);
       right_next_brightness = left_next_brightness;
     } else {
       left_next_brightness  = 0;

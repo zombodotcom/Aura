@@ -6,7 +6,7 @@
 //  1,494 bytes total for all 34 color palettes and associated code.
 
 void changePalette() {
-  EVERY_N_SECONDS(10) {
+  EVERY_N_SECONDS(6) {
     gCurrentPaletteNumber = addmod8( gCurrentPaletteNumber, 1, gGradientPaletteCount);
     gTargetPalette = gGradientPalettes[ gCurrentPaletteNumber ];
   }
