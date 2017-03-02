@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-int mode = 17;
+int mode = 19;
 //CRGB leds2[NUM_LEDS];
 //CRGB leds3[NUM_LEDS];
 
@@ -74,6 +74,8 @@ void MODE() {
     case 19:
       changePalette();
       map_palette(gCurrentPalette);
+    default:
+      flex_mono(); //this can be whatever default mode you want
       break;
   }
 
@@ -86,7 +88,7 @@ void MODE() {
   //  leds[i] = blend( leds2[i], leds3[i], ratio );
   //}
   FastLED.show();
-  FastLED.delay(1000 / FRAMES_PER_SECOND);
+  //FastLED.delay(1000 / FRAMES_PER_SECOND);
 
   /*
     FLEXFLEX();

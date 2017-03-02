@@ -7,9 +7,7 @@ void splatter() {
   changePalette();
   INDEX = random(10,240);
 
-  //MILLISECONDS  = 10;
-  //lowPass_audio = 0.15;
-  //READ_AUDIO();
+	// random16_add_entropy (uint16_t entropy)
 
   EVERY_N_MILLISECONDS(52){
     fadeToBlackBy(leds,NUM_LEDS,1);
@@ -22,8 +20,8 @@ void splatter() {
 
       //if (mono[band] */ or mono_volume /*  > 10) { // if audio crosses a threshold
       pos = random16(NUM_LEDS - 1);
-      left_pos  = pos - random(4, 14);
-      right_pos = pos + random(4, 14);
+      left_pos  = pos - random(15); // possibly change back to (min, max)
+      right_pos = pos + random(15);
       if (left_pos < 0) {
         left_pos = 0;
       }
