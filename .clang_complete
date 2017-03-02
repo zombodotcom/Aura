@@ -1,9 +1,9 @@
 -I/Users/drewandre/.platformio/packages/framework-arduinoavr/cores/arduino
 -I/Users/drewandre/.platformio/packages/framework-arduinoavr/variants/standard
--I/Users/drewandre/aura/lib/TimerOne
 -I/Users/drewandre/aura/lib/ClickEncoder
 -I/Users/drewandre/.platformio/packages/framework-arduinoavr/libraries/SoftwareSerial/src
 -I/Users/drewandre/aura/lib/FastLED
+-I/Users/drewandre/aura/lib/TimerOne
 -I/Users/drewandre/aura/src
 -I/Users/drewandre/aura/lib/ClickEncoder
 -I/Users/drewandre/aura/lib/ClickEncoder
