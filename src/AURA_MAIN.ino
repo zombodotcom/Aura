@@ -1,28 +1,29 @@
-#include <Arduino.h>
-//lib_deps = https://github.com/FastLED/FastLED.git
-#include <FastLED.h>
-// test num. 2
+/*
 
+   Written by Drew André using Daniel Garcia and Mark Kriegsman's FastLED library.
+   Eagle files..
+
+ */
+
+
+#include <Arduino.h>
+#include <FastLED.h>
 #include <ClickEncoder.h>
 #include <TimerOne.h>
-//#include <MSGEQ7.h>
+//#include <MSGEQ7.h> // to be built
 
-#define DEBUG true
+bool DEBUG = true;
 
-#define DATA_PIN  7
-#define NUM_LEDS 28
+// WS2812B SETUP
+const uint8_t DATA_PIN = 7;
+const uint8_t NUM_LEDS = 28;
 //int HALF_POS = (NUM_LEDS * 0.5) - 1;
-//#define HALF_POS 70
-#define HALF_POS 14
+const uint8_t HALF_POS = 14;
 CRGB leds[NUM_LEDS];
-//CRGB hues[NUM_LEDS];
-#define FRAMES_PER_SECOND  300
-
+const uint8_t FRAMES_PER_SECOND = 300;
 
 // RGB ENCODER SETUP
-#define REDPIN    3
-#define GREENPIN  5
-#define BLUEPIN   6
+const uint8_t REDPIN = 3, GREENPIN = 5, BLUEPIN = 6;
 ClickEncoder *encoder;
 int16_t last, value;
 int16_t encoderStatus = 1;
@@ -30,109 +31,25 @@ void timerIsr() {
         encoder->service();
 }
 
-// SPARKING: What chance (out of 255) is there that a new spark will be lit?
-// Higher chance = more roaring fire.  Lower chance = more flickery fire.
-// Default 120, suggested range 50-200.
-bool gReverseDirection = false;
-#define COOLING  170
-#define SPARKING 10
-
-// MSGEQ7 SETUP and SMOOTHING (eventually replace by MSGEQ7 class?)
-#define AUDIO_LEFT_PIN    0 // hammond 0
-#define AUDIO_RIGHT_PIN   1 // hammond N/A
-#define MSGEQ7_STROBE_PIN 4 // hammond 9
-#define MSGEQ7_RESET_PIN  5 // hammond 10
-int filter_min    = 120;
-int left_filter_max, right_filter_max, filter_max    = 1016;
+// MSGEQ7 SETUP and SMOOTHING (eventually replace by MSGEQ7 class)
+const uint8_t AUDIO_LEFT_PIN = 0, AUDIO_RIGHT_PIN = 1;
+const uint8_t MSGEQ7_STROBE_PIN = 4, MSGEQ7_RESET_PIN = 5;
 float lowPass_audio = 0.15;
-float EQ[7] = {0, 0, 0.1, 0.1, 0.1, 0.1, 0};
-int sensitive_min = filter_min - (filter_min * .15);
-float FILTER_MIN[7] = {filter_min, filter_min, filter_min, filter_min, filter_min, filter_min, filter_min};
-
-//float  EQ[7] = {0, 0, 0, 0, 0, 0, 0};
-
-int new_left, new_right;
-int prev_value, prev_left, prev_right, left_value, right_value;
-int left[7], right[7], mono[7];
-int left_volume, right_volume, mono_volume;
-// for msgeq7 mapping
+uint8_t filter_min = 120;
+const uint8_t left_filter_max, right_filter_max, filter_max = 1016;
+const float EQ[7] = {0, 0, 0.1, 0.1, 0.1, 0.1, 0}; /* EQ[7] = {0, 0, 0, 0, 0, 0, 0}; */
+const uint8_t sensitive_min = filter_min - (filter_min * .15);
+const float FILTER_MIN[7] = {filter_min, filter_min, filter_min, filter_min, filter_min, filter_min, filter_min};
+uint8_t new_left, new_right, prev_left, prev_right, prev_value, left_value, right_value;
+uint8_t left_volume, right_volume, mono_volume;
+uint8_t left[7], right[7], mono[7];
+uint8_t mapped_left[7], mapped_right[7], full_mapped[14], mapped[7], full_flex[7];
 float left_factor, right_factor, mono_factor, full_factor;
-int mapped_left[7], mapped_right[7], full_mapped[14], mapped[7], full_flex[7];
-float half_MAPPED_LEFT_AMP, half_MAPPED_RIGHT_AMP;
+float half_MAPPED_AMPLITUDE, half_MAPPED_LEFT_AMP, half_MAPPED_RIGHT_AMP;
+uint8_t prev_left_amp, prev_right_amp;
 
-int HUEZ[14] = {240, 200, 160, 120, 80, 40, 0, 0, 40, 80, 120, 160, 200, 240};
-
-int zero_l, three_l, six_l, zero_r, three_r, six_r;
-
-int ledindex, half_MAPPED_AMPLITUDE, segment;
-float divFactor;
-
-int hue;
-int INDEX;
-
-// for mirroring
-int current_hue;
-int current_brightness;
-int next_hue;
-int next_brightness;
-int pos;
-int point;
-
-// more mirroring?
-int left_current_brightness;
-int right_current_brightness;
-int left_next_brightness;
-int right_next_brightness;
-int left_pos;
-int right_pos;
-int left_point;
-int right_point;
-int left_next_hue;
-int right_next_hue;
-int left_current_sat;
-int right_current_sat;
-int left_next_sat;
-int right_next_sat;
-
-int prev_left_amp;
-int prev_right_amp;
-
-// segment sizes
-int segmentSize = 35;
-int half_segmentSize = floor(segmentSize * 0.5);
-float non_mirror_divFactor = 1.00 / segmentSize;
-//float divFactor = 0.00;
-//int segmentEnd[7] = {7, 12, 13, 15, 15, 13, 15};
-int segmentEnd[7] = {31, 22, 22, 22, 22, 13, 10};
-
-
-float HUEcorrection = /*floor(255 / NUM_LEDS);*/ 1.7; // *ALMOST* hue range fits on strip length
-float half_HUEcorrection = HUEcorrection * 2;
-int cnt;
-int k;
-
-int spectrumWidth = 36;
-
-static uint16_t x;
-static uint16_t y;
-static uint16_t dist;
-
-float z = 0.00f;
-float scale = 20.00f; //1 - ~4000 (shimmery, zoomed out)
-//uint8_t noise[MAX_DIMENSION][MAX_DIMENSION];
-
-//float SPEED = 1.00f;  //1-100 (fast)
-
-//noise stuff
-int ioffset;
-int joffset;
-int i;
-
-//palette stuff
-uint8_t maxChanges = 50;      // Value for blending between palettes.
-// Forward declarations of an array of cpt-city gradient palettes, and
-// a count of how many there are.  The actual color palette definitions
-// are at the bottom of this file.
+// PALETTE SETUP
+uint8_t maxChanges = 50; // speed for switching between palettes
 extern const TProgmemRGBGradientPalettePtr gGradientPalettes[];
 extern const uint8_t gGradientPaletteCount;
 float colorIndex = (256 / float(NUM_LEDS));
@@ -141,16 +58,48 @@ uint8_t gCurrentPaletteNumber = 0;
 CRGBPalette16 gCurrentPalette( CRGB::Black);
 CRGBPalette16 gTargetPalette( gGradientPalettes[0] );
 
+//NOISE SETUP
+static uint16_t x, y, z, dist;
+float scale = 20.00; //1 - ~4000 (shimmery, zoomed out)
+//float SPEED = 1.00f;  //1-100 (fast)
+uint8_t ioffset, joffset;
 
-int ihue = 0;
-int encoderHue = 0;
-float fhue = 0.00;
+// HSV SETUP
 int BRIGHTNESS = 255;
 int saturation = 255;
+uint8_t hue, ihue, encoderHue;
+float fhue;
+uint8_t spectrumWidth = 36;
+float HUEcorrection = /*floor(255 / NUM_LEDS);*/ 1.7; // *ALMOST* hue range fits on strip length
+float half_HUEcorrection = HUEcorrection * 2;
+// unnecessary math, to be fixed
+const uint8_t HUEZ[14] = {240, 200, 160, 120, 80, 40, 0, 0, 40, 80, 120, 160, 200, 240};
 
-//float SPEED = 1;
+// OTHER
+uint8_t ledindex, segment, INDEX, i, k, band;
+float divFactor;
 
-int MILLISECONDS;
+// EFFECT: radiate (stereo)
+uint8_t zero_l, three_l, six_l, zero_r, three_r, six_r;
+
+// EFFECT: flex (mono)
+uint8_t current_hue, current_brightness, next_hue, next_brightness, pos, point;
+// EFFECT: flex (stereo)
+uint8_t left_current_brightness, left_next_brightness, right_current_brightness, right_next_brightness;
+uint8_t left_next_hue, right_next_hue, left_current_sat, right_current_sat, left_next_sat, right_next_sat;
+uint8_t left_pos, right_pos, left_point, right_point;
+
+// EFFECT: audio data (mono and stereo)
+const uint8_t segmentSize = 32;
+const uint8_t half_segmentSize = floor(segmentSize * 0.5);
+float non_mirror_divFactor = 1.00 / segmentSize;
+const uint8_t segmentEnd[7] = {31, 22, 22, 22, 22, 13, 10};
+
+// EFFECT: fire2012 (Daniel Garcia and Mark Kriegsman)
+bool gReverseDirection = false;
+const uint8_t COOLING  = 170, SPARKING = 10; // Higher chance = more roaring fire, Default = 120
+
+int MILLISECONDS = 0;
 
 void setup() {
         delay(500);
@@ -158,16 +107,11 @@ void setup() {
         welcome();
 }
 
-void welcome() {
-        //intro animation for box button and leds
-        delay(500);
-}
-
 void loop() {
 
-        EVERY_N_MILLISECONDS(MILLISECONDS) {
-                //READ_AUDIO();
-        }
+        // EVERY_N_MILLISECONDS(MILLISECONDS) {
+        //         //READ_AUDIO();
+        // }
         MODE();
 
 
